@@ -1,0 +1,49 @@
+{
+    "titles": [
+        "Information Security",
+        "Information Security Consultant",
+        "Cyber Security",
+        "Cyber Security Professional",
+        "VAPT Consultant",
+        "Penetration Tester",
+        "Application Security",
+        "AppSec",
+        "Security Consultant"
+    ],
+    "domains": [
+        "Web Application Testing",
+        "Mobile Application Testing",
+        "API Testing",
+        "VACA",
+        "Vulnerability Assessment",
+        "Configuration Audit",
+        "Secure Code Review",
+        "SCR",
+        "Network Security"
+    ],
+    "tech_skills": [
+        "Burp suite",
+        "Wireshark",
+        "Postman",
+        "JADX",
+        "Frida",
+        "Kali Linux",
+        "Nessus",
+        "HCL Appscan",
+        "Checkmarx",
+        "Sonarqube",
+        "OWASP Top 10",
+        "Broken Access Control",
+        "CSRF",
+        "Privilege Escalation",
+        "Business Logic Flaws"
+    ],
+    "certifications": [
+        "eWPTX",
+        "CEH",
+        "Certified Ethical Hacker",
+        "CNSP",
+        "Certified Network Security Practitioner",
+        "API Penetration Testing"
+    ]
+}

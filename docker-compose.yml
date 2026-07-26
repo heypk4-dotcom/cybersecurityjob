@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    command: python main.py
+
+  dashboard:
+    build: .
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    command: streamlit run job_hunter/dashboard/app.py --server.address=0.0.0.0

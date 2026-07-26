@@ -1,0 +1,9 @@
+sqlalchemy==2.0.28
+pandas==2.2.1
+streamlit==1.32.2
+openai==1.14.2
+playwright==1.42.0
+beautifulsoup4==4.12.3
+requests==2.31.0
+schedule==1.2.1
+python-dotenv==1.0.1
