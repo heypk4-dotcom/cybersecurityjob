@@ -10,25 +10,48 @@ from job_hunter.database.models import Job
 
 def generate_html_report(jobs):
     html = f"""
+    <!DOCTYPE html>
     <html>
-      <body style="font-family: Arial, sans-serif; color: #333;">
-        <h2 style="color: #0056b3;">Daily Job Hunter Report</h2>
-        <p>Found <strong>{len(jobs)}</strong> high-quality jobs matching your profile today.</p>
-        <hr>
+      <head>
+        <meta charset="utf-8">
+      </head>
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #2C3E50; background-color: #F8F9FA; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%); padding: 30px; text-align: center; color: white;">
+                <h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 1px;">Cyber Security Job Matches</h1>
+                <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Exclusively curated for Aryan Kumar</p>
+            </div>
+            
+            <div style="padding: 30px;">
+                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 25px;">Hi <strong>Aryan</strong>,<br><br>Your AI assistant has scoured the web and found <strong>{len(jobs)}</strong> highly relevant roles matching your exact VAPT and Cyber Security experience.</p>
     """
     
     for job in jobs:
         html += f"""
-        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3>{job.title} @ {job.company}</h3>
-            <p><strong>AI Match Score:</strong> <span style="color: green; font-size: 1.1em;">{job.ai_score}/100</span></p>
-            <p><strong>Skills:</strong> {job.key_skills}</p>
-            <p><strong>Summary:</strong> {job.ai_summary}</p>
-            <a href="{job.link}" style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #0056b3; color: #fff; text-decoration: none; border-radius: 5px;">View Job</a>
-        </div>
+                <div style="margin-bottom: 25px; padding: 20px; border-left: 4px solid #26D0CE; background: #F8F9FA; border-radius: 0 8px 8px 0;">
+                    <h3 style="margin: 0 0 5px 0; color: #1A2980; font-size: 18px;">{job.title}</h3>
+                    <p style="margin: 0 0 15px 0; color: #7F8C8D; font-size: 14px; font-weight: 500;">{job.company} &bull; {job.location}</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <span style="background: #E8F8F5; color: #117A65; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">Match Score: {job.ai_score}/100</span>
+                    </div>
+                    
+                    <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5;"><strong>Why it's a match:</strong> {job.ai_summary}</p>
+                    <p style="margin: 0 0 20px 0; font-size: 13px; color: #666; font-style: italic;"><strong>Key Skills:</strong> {job.key_skills}</p>
+                    
+                    <a href="{job.link}" style="display: inline-block; padding: 10px 20px; background: #1A2980; color: #fff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500;">Apply Now</a>
+                </div>
         """
         
-    html += "</body></html>"
+    html += """
+            </div>
+            <div style="background: #F1F2F6; padding: 20px; text-align: center; font-size: 12px; color: #95A5A6;">
+                <p style="margin: 0;">Automated via Cyber Security Job Hunter Pipeline</p>
+            </div>
+        </div>
+      </body>
+    </html>
+    """
     return html
 
 def send_daily_email():
@@ -52,28 +75,20 @@ def send_daily_email():
     msg = MIMEMultipart("mixed")
     msg["Subject"] = f"🚀 Top {len(top_jobs)} Cyber Security Jobs for {datetime.now().strftime('%Y-%m-%d')}"
     msg["From"] = SENDER_EMAIL
-    msg["To"] = RECEIVER_EMAIL
+    receivers = [r.strip() for r in RECEIVER_EMAIL.split(',')]
+    msg["To"] = ", ".join(receivers)
 
     # Attach HTML
     html_content = generate_html_report(top_jobs)
     msg.attach(MIMEText(html_content, "html"))
 
-    # Attach CSV
-    try:
-        with open(CSV_PATH, "rb") as attachment:
-            part = MIMEBase("application", "octet-stream")
-            part.set_payload(attachment.read())
-        encoders.encode_base64(part)
-        part.add_header("Content-Disposition", f"attachment; filename= jobs.csv")
-        msg.attach(part)
-    except Exception as e:
-        print(f"[-] Could not attach CSV: {e}")
+    # Attach CSV removed per user request
 
     try:
         server = smtplib.SMTP(SMTP_SERVER, 587)
         server.starttls()
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, msg.as_string())
+        server.sendmail(SENDER_EMAIL, receivers, msg.as_string())
         server.quit()
         print("[+] Daily email report sent successfully!")
     except Exception as e:
