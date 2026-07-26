@@ -23,6 +23,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         playwright install chromium
+        playwright install-deps
 
     - name: Run Scraper Pipeline
       env:
@@ -31,8 +32,8 @@ jobs:
         SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        OPENAI_BASE_URL: https://api.openai.com/v1
-        OPENAI_MODEL: gpt-3.5-turbo
+        OPENAI_BASE_URL: https://api.groq.com/openai/v1
+        OPENAI_MODEL: llama3-70b-8192
       run: |
         # Run just the pipeline once, not the infinite schedule loop
         python -c "from job_hunter.scheduler.main_job import run_pipeline; run_pipeline()"

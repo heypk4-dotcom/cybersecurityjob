@@ -5,9 +5,9 @@ import time
 import random
 
 class LinkedInScraper(BaseScraper):
-    \"\"\"
+    """
     Scrapes LinkedIn public jobs using Playwright.
-    \"\"\"
+    """
     def __init__(self):
         self.locations = ["Mumbai", "Pune"]
         self.keywords = "Cyber Security"

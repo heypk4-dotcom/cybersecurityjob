@@ -4,9 +4,9 @@ import time
 from bs4 import BeautifulSoup
 
 class YCScraper(BaseScraper):
-    \"\"\"
+    """
     Scrapes YCombinator Hacker News jobs using Playwright.
-    \"\"\"
+    """
     def __init__(self):
         self.jobs = []
 
