@@ -69,7 +69,11 @@ def send_daily_email():
     session.close()
 
     if not top_jobs:
-        print("[*] No high-scoring jobs found today. Skipping email.")
+        print("[*] No high-scoring jobs found today. Sending fallback email.")
+        send_system_email(
+            subject="Status: No Jobs Found (Hourly Alert)",
+            body="Sorry, no new matching jobs were scraped in this hour."
+        )
         return
 
     msg = MIMEMultipart("mixed")
@@ -103,3 +107,25 @@ def send_daily_email():
         print("[+] Daily email report sent successfully!")
     except Exception as e:
         print(f"[-] Failed to send email: {e}")
+
+def send_system_email(subject, body):
+    """Utility to send basic text emails (errors, welcome messages, no-jobs)."""
+    if not all([SENDER_EMAIL, SENDER_PASSWORD, RECEIVER_EMAIL]):
+        return
+
+    msg = MIMEMultipart()
+    msg["Subject"] = subject
+    msg["From"] = SENDER_EMAIL
+    receivers = [r.strip() for r in RECEIVER_EMAIL.split(',')]
+    msg["To"] = ", ".join(receivers)
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, 587)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, receivers, msg.as_string())
+        server.quit()
+        print(f"[+] System email '{subject}' sent successfully!")
+    except Exception as e:
+        print(f"[-] Failed to send system email: {e}")
