@@ -1,14 +1,11 @@
 {
     "titles": [
-        "Information Security",
-        "Information Security Consultant",
+        "Information security",
         "Cyber Security",
-        "Cyber Security Professional",
-        "VAPT Consultant",
+        "VAPT consultant",
         "Penetration Tester",
-        "Application Security",
-        "AppSec",
-        "Security Consultant"
+        "Cloud Security",
+        "Red Team"
     ],
     "domains": [
         "Web Application Testing",

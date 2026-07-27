@@ -20,4 +20,4 @@ CSV_PATH = os.path.join("data", "jobs.csv")
 JSON_PATH = os.path.join("data", "jobs.json")
 
 # App
-MIN_MATCH_SCORE_EMAIL = 0
+MIN_MATCH_SCORE_EMAIL = 60

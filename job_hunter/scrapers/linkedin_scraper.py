@@ -1,3 +1,5 @@
+import os
+import json
 from job_hunter.scrapers.base import BaseScraper
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
@@ -10,7 +12,11 @@ class LinkedInScraper(BaseScraper):
     """
     def __init__(self):
         self.locations = ["Mumbai", "Pune"]
-        self.keywords = "Cyber Security"
+        # Load keywords from json
+        keywords_path = os.path.join(os.path.dirname(__file__), "..", "config", "keywords.json")
+        with open(keywords_path, 'r') as f:
+            data = json.load(f)
+            self.keywords = data.get("titles", ["Cyber Security"])
 
     def login(self):
         pass # Using public endpoint
@@ -30,36 +36,37 @@ class LinkedInScraper(BaseScraper):
                 )
                 page = context.new_page()
 
-                for location in self.locations:
-                    url = f"https://www.linkedin.com/jobs/search?keywords={self.keywords}&location={location}&f_E=3"
-                    print(f"[LinkedIn Scraper] Searching in {location}...")
-                    
-                    page.goto(url, timeout=60000)
-                    
-                    # Scroll down a few times to load dynamic content
-                    for _ in range(3):
-                        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                        time.sleep(random.uniform(1.5, 3.0))
-
-                    html = page.content()
-                    soup = BeautifulSoup(html, "html.parser")
-                    job_cards = soup.find_all("div", class_="base-card")
-                    
-                    for card in job_cards:
-                        title_elem = card.find("h3", class_="base-search-card__title")
-                        company_elem = card.find("h4", class_="base-search-card__subtitle")
-                        location_elem = card.find("span", class_="job-search-card__location")
-                        url_elem = card.find("a", class_="base-card__full-link")
+                for keyword in self.keywords:
+                    for location in self.locations:
+                        url = f"https://www.linkedin.com/jobs/search?keywords={keyword}&location={location}&f_E=3"
+                        print(f"[LinkedIn Scraper] Searching for '{keyword}' in {location}...")
                         
-                        if title_elem and company_elem and url_elem:
-                            link = url_elem['href'].split('?')[0] # Clean tracking params
-                            extracted.append({
-                                "title": title_elem.text.strip(),
-                                "company": company_elem.text.strip(),
-                                "location": location_elem.text.strip() if location_elem else location,
-                                "link": link,
-                                "description": f"{title_elem.text.strip()} at {company_elem.text.strip()}" # Description fetched by LLM or left basic to save bandwidth
-                            })
+                        page.goto(url, timeout=60000)
+                        
+                        # Scroll down a few times to load dynamic content
+                        for _ in range(3):
+                            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                            time.sleep(random.uniform(1.5, 3.0))
+
+                        html = page.content()
+                        soup = BeautifulSoup(html, "html.parser")
+                        job_cards = soup.find_all("div", class_="base-card")
+                        
+                        for card in job_cards:
+                            title_elem = card.find("h3", class_="base-search-card__title")
+                            company_elem = card.find("h4", class_="base-search-card__subtitle")
+                            location_elem = card.find("span", class_="job-search-card__location")
+                            url_elem = card.find("a", class_="base-card__full-link")
+                            
+                            if title_elem and company_elem and url_elem:
+                                link = url_elem['href'].split('?')[0] # Clean tracking params
+                                extracted.append({
+                                    "title": title_elem.text.strip(),
+                                    "company": company_elem.text.strip(),
+                                    "location": location_elem.text.strip() if location_elem else location,
+                                    "link": link,
+                                    "description": f"{title_elem.text.strip()} at {company_elem.text.strip()}"
+                                })
 
                 browser.close()
                 print(f"[LinkedIn Scraper] Successfully scraped {len(extracted)} real jobs from LinkedIn.")
