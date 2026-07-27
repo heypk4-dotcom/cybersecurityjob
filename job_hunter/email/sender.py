@@ -60,10 +60,10 @@ def send_daily_email():
         return
 
     session = get_session()
-    # Get jobs from last 24h with high score
-    yesterday = datetime.utcnow() - timedelta(days=1)
+    # Get jobs from last 1h with high score
+    past_hour = datetime.utcnow() - timedelta(hours=1)
     top_jobs = session.query(Job).filter(
-        Job.date_posted >= yesterday,
+        Job.date_posted >= past_hour,
         Job.ai_score >= MIN_MATCH_SCORE_EMAIL
     ).order_by(Job.ai_score.desc()).all()
     session.close()
@@ -73,7 +73,7 @@ def send_daily_email():
         return
 
     msg = MIMEMultipart("mixed")
-    msg["Subject"] = f"🚀 Top {len(top_jobs)} Cyber Security Jobs for {datetime.now().strftime('%Y-%m-%d')}"
+    msg["Subject"] = f"🚀 {len(top_jobs)} New Cyber Security Jobs (Hourly Alert: {datetime.now().strftime('%H:%M')})"
     msg["From"] = SENDER_EMAIL
     receivers = [r.strip() for r in RECEIVER_EMAIL.split(',')]
     msg["To"] = ", ".join(receivers)
