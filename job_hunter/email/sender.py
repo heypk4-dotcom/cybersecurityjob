@@ -82,8 +82,18 @@ def send_daily_email():
     html_content = generate_html_report(top_jobs)
     msg.attach(MIMEText(html_content, "html"))
 
-    # Attach CSV removed per user request
-
+    # Attach CSV
+    import os
+    if os.path.exists(CSV_PATH):
+        with open(CSV_PATH, "rb") as attachment:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
+            encoders.encode_base64(part)
+            part.add_header(
+                "Content-Disposition",
+                f"attachment; filename={os.path.basename(CSV_PATH)}",
+            )
+            msg.attach(part)
     try:
         server = smtplib.SMTP(SMTP_SERVER, 587)
         server.starttls()
