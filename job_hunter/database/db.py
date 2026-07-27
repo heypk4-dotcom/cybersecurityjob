@@ -3,12 +3,12 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from job_hunter.database.models import Base, Job
-from job_hunter.config.settings import DB_PATH, CSV_PATH, JSON_PATH
+from job_hunter.config.settings import DB_PATH, CSV_PATH, JSON_PATH, DATABASE_URL
 
-# Ensure data directory exists
+# Ensure data directory exists (still needed for exports)
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-engine = create_engine(f'sqlite:///{DB_PATH}')
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
