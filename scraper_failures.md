@@ -19,9 +19,9 @@ Based on the error logs from the GitHub Actions execution, today's failure was c
 * **Headless Browser Detection:** Modern bot-mitigation systems (Cloudflare, Datadome, LinkedIn's internal anti-bot) can detect Playwright's headless Chromium browser by inspecting JavaScript properties (`navigator.webdriver`).
 * **Timeouts:** The GitHub Actions runner might experience slow network connectivity. If the page takes longer than `timeout=60000` (60 seconds) to load, Playwright will throw a `TimeoutError` and crash the scraper.
 
-### 2. LLM & API Failures (Groq/OpenAI)
-* **Rate Limiting:** The free tier of the Groq API (or OpenAI) has strict limits on requests per minute (RPM) and tokens per minute (TPM). Processing too many scraped jobs at once can trigger a `429 Too Many Requests` error.
-* **Invalid or Expired API Keys:** If the `OPENAI_API_KEY` secret in GitHub Actions is missing, expired, or revoked, the `OpenAI` client initialization will fail.
+### 2. LLM Processing Failures
+* **Dependency Conflicts (OpenAI vs HTTPX):** The `openai` python package depends on `httpx`. Older versions of `openai` (like `1.14.2`) passed a `proxies` argument to `httpx`. However, newer versions of `httpx` (like `0.28.0+`) completely removed this argument. This causes the script to crash immediately on startup with `Client.__init__() got an unexpected keyword argument 'proxies'`. The fix is to ensure the `openai` package is kept up-to-date (e.g., `>=1.50.0`) in `requirements.txt`.
+* **API Key Rate Limits:** Both OpenAI and Groq have strict rate limits. If you process hundreds of jobs at once, the API might return a 429 Too Many Requests error.
 * **JSON Parsing Errors:** The LLM is prompted to return a JSON object, but occasionally it might return malformed JSON or include conversational text. The `json.loads(content)` step in `llm_processor.py` would then fail with a `JSONDecodeError`.
 
 ### 3. GitHub Actions Environment Issues
