@@ -25,6 +25,7 @@ Based on the error logs from the GitHub Actions execution, today's failure was c
 * **JSON Parsing Errors:** The LLM is prompted to return a JSON object, but occasionally it might return malformed JSON or include conversational text. The `json.loads(content)` step in `llm_processor.py` would then fail with a `JSONDecodeError`.
 
 ### 3. GitHub Actions Environment Issues
+* **OS Compatibility for Dependencies (Ubuntu 24.04 vs 22.04):** GitHub occasionally updates `ubuntu-latest` to a newer OS version (e.g., from Ubuntu 22.04 to Ubuntu 24.04). Older versions of Playwright (like `1.42.0`) expect older system libraries (`libasound2`, `libffi7`) which no longer exist in the newer OS, causing `playwright install-deps` to fail with "Package has no installation candidate". Pinning the runner to `ubuntu-22.04` instead of `ubuntu-latest` prevents these sudden breakages.
 * **Missing GitHub Secrets:** If any of the environment variables (`SENDER_EMAIL`, `SENDER_PASSWORD`, `RECEIVER_EMAIL`, `OPENAI_API_KEY`, `DATABASE_URL`) are not correctly configured in the repository's Settings > Secrets, the Python script will lack the necessary credentials to run.
 * **Runner Resource Exhaustion:** Running Playwright browsers consumes significant memory. The default GitHub Actions Ubuntu runner might occasionally run out of memory (OOM) and kill the process.
 
