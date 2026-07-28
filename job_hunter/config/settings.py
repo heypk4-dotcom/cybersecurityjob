@@ -16,7 +16,7 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 
 # DB
 DB_PATH = os.path.join("data", "jobs.db")
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
+DATABASE_URL = os.getenv("DATABASE_URL") or f"sqlite:///{DB_PATH}"
 CSV_PATH = os.path.join("data", "jobs.csv")
 JSON_PATH = os.path.join("data", "jobs.json")
 
